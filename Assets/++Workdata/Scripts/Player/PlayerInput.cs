@@ -5,15 +5,21 @@ using UnityEngine.InputSystem;
 
 public class PlayerInput : MonoBehaviour
 {
-    public PlayerController playerController;
-    
     private InputSystem_Actions _inputActions;
-    private InputAction _moveAction;
 
+    private InputAction _moveAction;
+    
+    private InputAction _interactAction;
+    
+    
+    /// <summary>
+    /// 
+    /// </summary>
     private void Awake()
     {
         _inputActions = new InputSystem_Actions();
         _moveAction = _inputActions.Player.Move;
+        _interactAction = _inputActions.Player.Interact;
     }
 
     private void OnEnable()
@@ -32,12 +38,16 @@ public class PlayerInput : MonoBehaviour
     {
         _moveAction.performed += MoveInput;
         _moveAction.canceled += MoveInput;
+        
+      //  _interactAction.performed += InteractInput;
     }
     
     private void UnsubscribeActions()
     {
         _moveAction.performed -= MoveInput;
         _moveAction.canceled -= MoveInput;
+        
+      //  _interactAction.performed -= InteractInput;
     }
     
     public void InputEnable()
@@ -54,4 +64,10 @@ public class PlayerInput : MonoBehaviour
     {
         PlayerController.OnMoveInput?.Invoke(_moveAction.ReadValue<Vector2>());
     }    
+    
+   // private void InteractInput(InputAction.CallbackContext context)
+   // {
+   //     PlayerInteraction.OnInteract?.Invoke();
+   // }
 }
+

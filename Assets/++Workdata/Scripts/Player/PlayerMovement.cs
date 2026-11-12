@@ -1,76 +1,163 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
-public class PlayerController : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
-    public static Action<Vector2> OnMoveInput;
-    public static Action<bool> OnSprintInput;
-    
-    [SerializeField]
-    private float walkingSpeed = 5f;
-    
-    [SerializeField]
-    private float runningSpeed = 10f;
-    
-    [SerializeField]
-    private float acceleration = 10f;
-    
-    [SerializeField]
-    private float deceleration = 10f;
-    
-    private Rigidbody2D rb;
-    
-    private Vector2 _moveInput;
-    public Vector2 MoveInput => _moveInput;
-    
-    private float _currentSpeed;
-    
-    private void Awake()
-    {
-        _currentSpeed = walkingSpeed;
-        rb = GetComponent<Rigidbody2D>();
-    }
+    [SerializeField] Rigidbody2D rb2D;
+    [SerializeField] PhysicsMaterial2D airMaterial2D;
 
-    private void OnEnable()
-    {
-        OnMoveInput += OnMove;
-        OnSprintInput += OnSprint;
-    }
-    
-    private void OnDisable()
-    {
-        OnMoveInput -= OnMove;
-        OnSprintInput -= OnSprint;
-    }
-    
-    private void FixedUpdate()
-    {
-        Vector2 targetVelocity = _moveInput * _currentSpeed;
-        Vector2 currentVelocity = rb.linearVelocity;
-        
-        if(_moveInput != Vector2.zero)
-            rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime * acceleration);
-        else
-            rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime * deceleration);
-        
-        transform.eulerAngles = new Vector3(0f, _moveInput.x < 0 ? 180 : _moveInput.x > 0 ? 0 : transform.eulerAngles.y, 0f);
+    [SerializeField] float movementSpeed;
+    [SerializeField] float jumpForce;
+    [SerializeField] private float coyoteTime;
 
-        if (_moveInput != Vector2.zero)
+    [SerializeField] private float normalGravity = 2;
+    [SerializeField] private float fallingGravity = 4;
+
+    [SerializeField] private Animator animator;
+
+    [SerializeField] private GameManager gameManager;
+
+    private float movement;
+    private bool isMoving;
+    private float timeSinceGrounded;
+    private bool coyoteJump;
+    private bool grounded;
+    private bool doubleJumpAvailable;
+    private bool jumpButtonIsPressed;
+
+    [Header("Ground Check Settings")] public Transform groundCheckPoint;
+    public float checkRadius = 0.2f;
+    public LayerMask groundLayer;
+
+    public bool isGrounded;
+
+    void FixedUpdate()
+    {
+        //movement
         {
-            Vector3 vector3 = Vector3.left * _moveInput.x + Vector3.down * _moveInput.y;
+            rb2D.linearVelocityX = movement * movementSpeed * Time.deltaTime;
+        }
+
+        if (movement < 0)
+        {
+            transform.localScale = new Vector3(-1f, 1f, 1f);
+        }
+        else if (movement > 0)
+        {
+            transform.localScale = new Vector3(1f, 1f, 1f);
+        }
+
+        //Faster Fall
+        if (rb2D.linearVelocityY < 0)
+        {
+            rb2D.gravityScale = fallingGravity;
+        }
+        else if (rb2D.linearVelocityY > 0 && !jumpButtonIsPressed)
+        {
+            rb2D.gravityScale = fallingGravity;
+        }
+        else
+        {
+            rb2D.gravityScale = normalGravity;
         }
     }
-    
-    private void OnMove(Vector2 moveInput)
+
+    void Update()
     {
-        _moveInput = moveInput;
+        // Checks if an invisible circle at the feet overlaps with the Ground layer
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, checkRadius, groundLayer);
     }
-    
-    private void OnSprint(bool value)
+
+    // Optional: Draws a red circle in the Scene view so you can see the check area
+    void OnDrawGizmosSelected()
     {
-        _currentSpeed = value ? runningSpeed : walkingSpeed;
+        if (groundCheckPoint == null) return;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(groundCheckPoint.position, checkRadius);
+    }
+
+    //movementDirection
+    public void Move(InputAction.CallbackContext context)
+    {
+        movement = context.ReadValue<Vector2>().x;
+
+        if (movement != 0)
+        {
+            animator.SetBool("isRunning", true);
+            animator.SetBool("isIdle", false);
+        }
+        else if (movement == 0)
+        {
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isIdle", true);
+        }
+
+        if (grounded)
+        {
+            animator.SetBool("isGrounded", true);
+            animator.SetBool("isJumping", false);
+        }
+
+        // if (grounded == false)
+        // {
+        //     Debug.Log("falling");
+        //     animator.SetBool("isJumping", true);
+        // }
+
+    }
+
+    public void Restart(InputAction.CallbackContext context)
+    {
+        gameManager.Restart();
+    }
+
+    //Jump
+    public void Jump(InputAction.CallbackContext context)
+    {
+        //how long is jump button pressed
+        if (context.phase == InputActionPhase.Started)
+        {
+            doubleJumpAvailable = false;
+            jumpButtonIsPressed = true;
+            animator.SetBool("isGrounded", false);
+            animator.SetBool("isJumping", true);
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isIdle", false);
+        }
+        else if (context.phase == InputActionPhase.Canceled)
+        {
+            jumpButtonIsPressed = false;
+            animator.SetBool("isJumping", false);
+        }
+
+        if (context.phase == InputActionPhase.Canceled && movement != 0)
+        {
+            animator.SetBool("isRunning", true);
+        }
+
+        if (context.performed && grounded)
+        {
+            animator.SetBool("isGrounded", true);
+        }
+
+        if (context.performed)
+        {
+
+            if (grounded || doubleJumpAvailable || coyoteJump)
+            {
+                rb2D.linearVelocityY = jumpForce;
+
+                if (!grounded && !coyoteJump)
+                {
+                    doubleJumpAvailable = false;
+                }
+
+                else if (!grounded && coyoteJump)
+                {
+                    coyoteJump = false;
+                }
+            }
+        }
     }
 }
