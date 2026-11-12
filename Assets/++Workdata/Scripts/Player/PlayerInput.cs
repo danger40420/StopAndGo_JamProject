@@ -10,6 +10,7 @@ public class PlayerInput : MonoBehaviour
     private InputAction _moveAction;
     private InputAction _jumpAction;
     private InputAction _interactAction;
+    private InputAction _shiftAction;
     
     
     /// <summary>
@@ -21,6 +22,7 @@ public class PlayerInput : MonoBehaviour
         _moveAction = _inputActions.Player.Move;
         _jumpAction = _inputActions.Player.Jump;
         _interactAction = _inputActions.Player.Interact;
+        _shiftAction = _inputActions.Player.StartCombo;
     }
 
     private void OnEnable()
@@ -41,8 +43,10 @@ public class PlayerInput : MonoBehaviour
         _moveAction.canceled += MoveInput;
         _jumpAction.performed += JumpInput;
         _jumpAction.canceled += JumpInput;
-        
-      //  _interactAction.performed += InteractInput;
+        _shiftAction.performed += ShiftInput;
+        _shiftAction.canceled += ShiftInput;
+
+        //  _interactAction.performed += InteractInput;
     }
     
     private void UnsubscribeActions()
@@ -51,6 +55,8 @@ public class PlayerInput : MonoBehaviour
         _moveAction.canceled -= MoveInput;
         _jumpAction.performed -= JumpInput;
         _jumpAction.canceled -= JumpInput;
+        _shiftAction.performed -= ShiftInput;
+        _shiftAction.canceled -= ShiftInput;
         
       //  _interactAction.performed -= InteractInput;
     }
@@ -74,7 +80,11 @@ public class PlayerInput : MonoBehaviour
     {
         PlayerController.OnJumpInput?.Invoke(_jumpAction.triggered);
     }
-    
+
+    private void ShiftInput(InputAction.CallbackContext context)
+    {
+        PlayerController.OnShiftInput?.Invoke(_shiftAction.triggered);
+    }
    // private void InteractInput(InputAction.CallbackContext context)
    // {
    //     PlayerInteraction.OnInteract?.Invoke();

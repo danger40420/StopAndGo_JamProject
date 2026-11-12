@@ -3,7 +3,14 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Combo1
+  - Combo2
+  - Combo3
+  - Obstacle
+  - Point1
+  - Point2
+  - Point3
   layers:
   - Default
   - TransparentFX

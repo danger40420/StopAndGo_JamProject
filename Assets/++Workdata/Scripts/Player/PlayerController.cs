@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
     public static Action<Vector2> OnMoveInput;
     public static Action<bool> OnSprintInput;
     public static Action<bool> OnJumpInput;
+    public static Action<bool> OnShiftInput;
     
     [SerializeField]
     private float walkingSpeed = 5f;
@@ -47,6 +48,14 @@ public class PlayerController : MonoBehaviour
     
     private float _currentSpeed;
 
+    private bool comboStarted;
+    
+    [SerializeField]
+    private Transform _playerTransform;
+    
+    [SerializeField]
+    private SpriteRenderer PlayerSprite;
+
     private void Awake()
     {
         _currentSpeed = walkingSpeed;
@@ -58,6 +67,7 @@ public class PlayerController : MonoBehaviour
         OnMoveInput += OnMove;
         OnSprintInput += OnSprint;
         OnJumpInput += OnJump;
+        OnShiftInput += OnShift;
     }
 
     private void OnDisable()
@@ -65,6 +75,7 @@ public class PlayerController : MonoBehaviour
         OnMoveInput -= OnMove;
         OnSprintInput -= OnSprint;
         OnJumpInput -= OnJump;
+        OnShiftInput -= OnShift;
     }
 
     private void FixedUpdate()
@@ -91,6 +102,13 @@ public class PlayerController : MonoBehaviour
         else
         {
             _rb.gravityScale = normalGravity;
+        }
+
+        if (comboStarted && _moveInput == Vector2.left)
+        {
+            transform.Rotate(0f, 0f, 90f, Space.World);
+            gameObject.tag = "Combo1";
+            PlayerSprite.color = Color.red;
         }
     }
     
@@ -124,6 +142,14 @@ public class PlayerController : MonoBehaviour
         {
             _rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
         }
+    }
+
+    private void OnShift(bool value)
+    {
+        comboStarted = value;
+        print(value);
+        gameObject.tag = "Player";
+        PlayerSprite.color = Color.white;
     }
 }    
 
