@@ -8,7 +8,7 @@ public class PlayerInput : MonoBehaviour
     private InputSystem_Actions _inputActions;
 
     private InputAction _moveAction;
-    
+    private InputAction _jumpAction;
     private InputAction _interactAction;
     
     
@@ -19,6 +19,7 @@ public class PlayerInput : MonoBehaviour
     {
         _inputActions = new InputSystem_Actions();
         _moveAction = _inputActions.Player.Move;
+        _jumpAction = _inputActions.Player.Jump;
         _interactAction = _inputActions.Player.Interact;
     }
 
@@ -38,6 +39,8 @@ public class PlayerInput : MonoBehaviour
     {
         _moveAction.performed += MoveInput;
         _moveAction.canceled += MoveInput;
+        _jumpAction.performed += JumpInput;
+        _jumpAction.canceled += JumpInput;
         
       //  _interactAction.performed += InteractInput;
     }
@@ -46,6 +49,8 @@ public class PlayerInput : MonoBehaviour
     {
         _moveAction.performed -= MoveInput;
         _moveAction.canceled -= MoveInput;
+        _jumpAction.performed -= JumpInput;
+        _jumpAction.canceled -= JumpInput;
         
       //  _interactAction.performed -= InteractInput;
     }
@@ -63,7 +68,12 @@ public class PlayerInput : MonoBehaviour
     private void MoveInput(InputAction.CallbackContext context)
     {
         PlayerController.OnMoveInput?.Invoke(_moveAction.ReadValue<Vector2>());
-    }    
+    }
+
+    private void JumpInput(InputAction.CallbackContext context)
+    {
+        PlayerController.OnJumpInput?.Invoke(_jumpAction.triggered);
+    }
     
    // private void InteractInput(InputAction.CallbackContext context)
    // {

@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     public static Action<Vector2> OnMoveInput;
     public static Action<bool> OnSprintInput;
+    public static Action<bool> OnJumpInput;
     
     [SerializeField]
     private float walkingSpeed = 5f;
@@ -56,12 +57,14 @@ public class PlayerController : MonoBehaviour
     {
         OnMoveInput += OnMove;
         OnSprintInput += OnSprint;
+        OnJumpInput += OnJump;
     }
 
     private void OnDisable()
     {
         OnMoveInput -= OnMove;
         OnSprintInput -= OnSprint;
+        OnJumpInput -= OnJump;
     }
 
     private void FixedUpdate()
@@ -70,9 +73,9 @@ public class PlayerController : MonoBehaviour
         Vector2 currentVelocity = _rb.linearVelocity;
         
         if(_moveInput != Vector2.zero)
-            _rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime * acceleration);
+            _rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime);
         else
-            _rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime * deceleration);
+            _rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime);
         
         transform.eulerAngles = new Vector3(0f, _moveInput.x < 0 ? 180 : _moveInput.x > 0 ? 0 : transform.eulerAngles.y, 0f);
         
@@ -91,16 +94,36 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    
+    void Update()
+    {
+        // Checks if an invisible circle at the feet overlaps with the Ground layer
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, checkRadius, groundLayer);
+    }
+
+    // Optional: Draws a red circle in the Scene view so you can see the check area
+    void OnDrawGizmosSelected()
+    {
+        if (groundCheckPoint == null) return;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(groundCheckPoint.position, checkRadius);
+    }
 
     private void OnMove(Vector2 moveInput)
     {
-        _moveInput = moveInput;
+        _moveInput.x = moveInput.x;
     }
 
     private void OnSprint(bool value)
     {
         _currentSpeed = value ? runningSpeed : walkingSpeed;
+    }
+
+    private void OnJump(bool value)
+    {
+        if (isGrounded)
+        {
+            _rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+        }
     }
 }    
 
