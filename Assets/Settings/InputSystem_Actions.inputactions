@@ -105,6 +105,36 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "Pose1",
+                    "type": "Button",
+                    "id": "4fcbbbf3-c1bc-4bfc-bda7-2b49eaf1de77",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "Pose2",
+                    "type": "Button",
+                    "id": "6542ff19-d92a-40ed-a8de-d9a7a404f1fd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "Pose3",
+                    "type": "Button",
+                    "id": "1c6a3451-7eb7-4526-94f3-c782f7c22209",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -501,6 +531,39 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "StartCombo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "70058f47-e8a8-4bb3-9dde-a5f943f5e435",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pose1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5b05b289-2b68-45b4-9597-af5128947916",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pose2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d7a52dee-1a6e-412d-9729-2c740764be7d",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pose3",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

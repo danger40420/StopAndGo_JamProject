@@ -1,5 +1,10 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using Random = System.Random;
 
 public class PlayerController : MonoBehaviour
 {
@@ -7,6 +12,10 @@ public class PlayerController : MonoBehaviour
     public static Action<bool> OnSprintInput;
     public static Action<bool> OnJumpInput;
     public static Action<bool> OnShiftInput;
+    
+    public static Action<bool> OnPose1Input;
+    public static Action<bool> OnPose2Input;
+    public static Action<bool> OnPose3Input;
     
     [SerializeField]
     private float walkingSpeed = 5f;
@@ -55,11 +64,30 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField]
     private SpriteRenderer PlayerSprite;
+    
+    private float Score;
+    
+    private float currentHitPoints;
+    private float maxHitPoints = 4f;
+    
+    public List<GameObject> prefabList;
+    public Camera targetCamera;
+    public Transform playerTransform;
+    public float spawnRadius = 5f;
+    public float poseTimer = 5f;
+    
+    
 
     private void Awake()
     {
         _currentSpeed = walkingSpeed;
         _rb = GetComponent<Rigidbody2D>();
+    }
+    
+    private void Start()
+    {
+        currentHitPoints = maxHitPoints;
+        poseTimer = UnityEngine.Random.Range(3f, 10f);
     }
 
     private void OnEnable()
@@ -68,6 +96,9 @@ public class PlayerController : MonoBehaviour
         OnSprintInput += OnSprint;
         OnJumpInput += OnJump;
         OnShiftInput += OnShift;
+        OnPose1Input += OnPose1;
+        OnPose2Input += OnPose2;
+        OnPose3Input += OnPose3;
     }
 
     private void OnDisable()
@@ -80,13 +111,15 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        poseTimer -= Time.deltaTime;
+        
         Vector2 targetVelocity = _moveInput * _currentSpeed;
         Vector2 currentVelocity = _rb.linearVelocity;
         
         if(_moveInput != Vector2.zero)
-            _rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime);
+            _rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime * acceleration);
         else
-            _rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime);
+            _rb.linearVelocity = Vector2.Lerp(currentVelocity, targetVelocity, Time.deltaTime * deceleration);
         
         transform.eulerAngles = new Vector3(0f, _moveInput.x < 0 ? 180 : _moveInput.x > 0 ? 0 : transform.eulerAngles.y, 0f);
         
@@ -103,20 +136,79 @@ public class PlayerController : MonoBehaviour
         {
             _rb.gravityScale = normalGravity;
         }
-
-        if (comboStarted && _moveInput == Vector2.left)
+    }
+    
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Point1" && gameObject.tag == "Combo1")
         {
-            transform.Rotate(0f, 0f, 90f, Space.World);
-            gameObject.tag = "Combo1";
-            PlayerSprite.color = Color.red;
+            _rb.constraints = RigidbodyConstraints2D.None;
+            Score++;
+            print(Score);
+            acceleration += 1f;
+            Destroy(other.gameObject);
         }
+
+        if (other.tag == "Point2" && gameObject.tag == "Combo2")
+        {
+            _rb.constraints = RigidbodyConstraints2D.None;
+            Score++;
+            print(Score);
+            acceleration += 1f;
+            Destroy(other.gameObject);
+        }
+
+        if (other.tag == "Point3" && gameObject.tag == "Combo3")
+        {
+            _rb.constraints = RigidbodyConstraints2D.None;
+            Score++;
+            print(Score);
+            acceleration += 1f;
+            Destroy(other.gameObject);
+        }
+        
+        if (other.tag == "Obstacle")
+        {
+            currentHitPoints -= 1; 
+            print(currentHitPoints);
+            acceleration = 1f;
+        }
+
+        if (currentHitPoints <= 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        
+    }
+
+    void EnterPoseMode()
+    {
+        poseTimer = UnityEngine.Random.Range(1f, 10f);
+        print("in Pose Mode");
+        
+        _rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
+        
+           int prefabIndex = UnityEngine.Random.Range(0, 3);
+           GameObject selectedPrefab = prefabList[prefabIndex];
+        
+           Vector2 randomPoint2D = UnityEngine.Random.insideUnitCircle * spawnRadius;
+           Vector3 spawnPosition = playerTransform.position + new Vector3(randomPoint2D.x, 0f, randomPoint2D.y);
+        
+           Instantiate(selectedPrefab, spawnPosition, Quaternion.identity);
     }
     
     void Update()
     {
         // Checks if an invisible circle at the feet overlaps with the Ground layer
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, checkRadius, groundLayer);
+        
+        if (poseTimer <= 0)
+        {
+            EnterPoseMode();
+        }
     }
+    
+    
 
     // Optional: Draws a red circle in the Scene view so you can see the check area
     void OnDrawGizmosSelected()
@@ -144,6 +236,35 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnPose1(bool value)
+    {
+        if (comboStarted)
+        {
+            transform.Rotate(0f, 0f, 90f, Space.World);
+            gameObject.tag = "Combo1";
+            PlayerSprite.color = Color.yellow;
+        }
+    }
+
+    private void OnPose2(bool value)
+    {
+        if (comboStarted)
+        {
+            transform.Rotate(0f, 0f, 90f, Space.World);
+            gameObject.tag = "Combo2";
+            PlayerSprite.color = Color.red;
+        }
+    }
+    
+    private void OnPose3(bool value)
+    {
+        if (comboStarted)
+        {
+            transform.Rotate(0f, 0f, 90f, Space.World);
+            gameObject.tag = "Combo3";
+            PlayerSprite.color = Color.blue;
+        }
+    }
     private void OnShift(bool value)
     {
         comboStarted = value;
