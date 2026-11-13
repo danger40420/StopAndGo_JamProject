@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 using Random = System.Random;
 
 public class PlayerController : MonoBehaviour
@@ -138,36 +139,36 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.tag == "Point1" && gameObject.tag == "Combo1")
+        if (collision.CompareTag("Point1") && gameObject.tag == "Combo1")
         {
             _rb.constraints = RigidbodyConstraints2D.None;
             Score++;
             print(Score);
             acceleration += 1f;
-            Destroy(other.gameObject);
+            Destroy(collision.gameObject);
         }
 
-        if (other.tag == "Point2" && gameObject.tag == "Combo2")
+        if (collision.CompareTag("Point2") && gameObject.tag == "Combo2")
         {
             _rb.constraints = RigidbodyConstraints2D.None;
             Score++;
             print(Score);
             acceleration += 1f;
-            Destroy(other.gameObject);
+            Destroy(collision.gameObject);
         }
 
-        if (other.tag == "Point3" && gameObject.tag == "Combo3")
+        if (collision.CompareTag("Point3") && gameObject.tag == "Combo3")
         {
             _rb.constraints = RigidbodyConstraints2D.None;
             Score++;
             print(Score);
             acceleration += 1f;
-            Destroy(other.gameObject);
+            Destroy(collision.gameObject);
         }
         
-        if (other.tag == "Obstacle")
+        if (collision.CompareTag("Obstacle"))
         {
             currentHitPoints -= 1; 
             print(currentHitPoints);
@@ -186,7 +187,7 @@ public class PlayerController : MonoBehaviour
         poseTimer = UnityEngine.Random.Range(1f, 10f);
         print("in Pose Mode");
         
-        _rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
+       // _rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
         
            int prefabIndex = UnityEngine.Random.Range(0, 3);
            GameObject selectedPrefab = prefabList[prefabIndex];
