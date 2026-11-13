@@ -191,6 +191,36 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Pose1"",
+                    ""type"": ""Button"",
+                    ""id"": ""4fcbbbf3-c1bc-4bfc-bda7-2b49eaf1de77"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Pose2"",
+                    ""type"": ""Button"",
+                    ""id"": ""6542ff19-d92a-40ed-a8de-d9a7a404f1fd"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Pose3"",
+                    ""type"": ""Button"",
+                    ""id"": ""1c6a3451-7eb7-4526-94f3-c782f7c22209"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -587,6 +617,39 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""StartCombo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""70058f47-e8a8-4bb3-9dde-a5f943f5e435"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pose1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5b05b289-2b68-45b4-9597-af5128947916"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pose2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7a52dee-1a6e-412d-9729-2c740764be7d"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pose3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1194,6 +1257,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_StartCombo = m_Player.FindAction("StartCombo", throwIfNotFound: true);
+        m_Player_Pose1 = m_Player.FindAction("Pose1", throwIfNotFound: true);
+        m_Player_Pose2 = m_Player.FindAction("Pose2", throwIfNotFound: true);
+        m_Player_Pose3 = m_Player.FindAction("Pose3", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1297,6 +1363,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_StartCombo;
+    private readonly InputAction m_Player_Pose1;
+    private readonly InputAction m_Player_Pose2;
+    private readonly InputAction m_Player_Pose3;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1348,6 +1417,18 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/StartCombo".
         /// </summary>
         public InputAction @StartCombo => m_Wrapper.m_Player_StartCombo;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Pose1".
+        /// </summary>
+        public InputAction @Pose1 => m_Wrapper.m_Player_Pose1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Pose2".
+        /// </summary>
+        public InputAction @Pose2 => m_Wrapper.m_Player_Pose2;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Pose3".
+        /// </summary>
+        public InputAction @Pose3 => m_Wrapper.m_Player_Pose3;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1404,6 +1485,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @StartCombo.started += instance.OnStartCombo;
             @StartCombo.performed += instance.OnStartCombo;
             @StartCombo.canceled += instance.OnStartCombo;
+            @Pose1.started += instance.OnPose1;
+            @Pose1.performed += instance.OnPose1;
+            @Pose1.canceled += instance.OnPose1;
+            @Pose2.started += instance.OnPose2;
+            @Pose2.performed += instance.OnPose2;
+            @Pose2.canceled += instance.OnPose2;
+            @Pose3.started += instance.OnPose3;
+            @Pose3.performed += instance.OnPose3;
+            @Pose3.canceled += instance.OnPose3;
         }
 
         /// <summary>
@@ -1445,6 +1535,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @StartCombo.started -= instance.OnStartCombo;
             @StartCombo.performed -= instance.OnStartCombo;
             @StartCombo.canceled -= instance.OnStartCombo;
+            @Pose1.started -= instance.OnPose1;
+            @Pose1.performed -= instance.OnPose1;
+            @Pose1.canceled -= instance.OnPose1;
+            @Pose2.started -= instance.OnPose2;
+            @Pose2.performed -= instance.OnPose2;
+            @Pose2.canceled -= instance.OnPose2;
+            @Pose3.started -= instance.OnPose3;
+            @Pose3.performed -= instance.OnPose3;
+            @Pose3.canceled -= instance.OnPose3;
         }
 
         /// <summary>
@@ -1815,6 +1914,27 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnStartCombo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Pose1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPose1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Pose2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPose2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Pose3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPose3(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
