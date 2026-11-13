@@ -5860,8 +5860,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   walkingSpeed: 25
   runningSpeed: 45
-  acceleration: 0
-  deceleration: 0
+  acceleration: 1
+  deceleration: 1
   jumpForce: 15
   coyoteTime: 1
   normalGravity: 0.5
@@ -5874,6 +5874,11 @@ MonoBehaviour:
   isGrounded: 0
   _playerTransform: {fileID: 1097865920}
   PlayerSprite: {fileID: 1097865921}
+  prefabList: []
+  targetCamera: {fileID: 0}
+  playerTransform: {fileID: 0}
+  spawnRadius: 5
+  poseTimer: 5
 --- !u!70 &1595797307
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

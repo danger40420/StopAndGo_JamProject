@@ -234,6 +234,7 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             _rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+        
         }
     }
 

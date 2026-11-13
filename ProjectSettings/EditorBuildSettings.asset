@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/++Workdata/Scenes/GameScene.unity
     guid: b0d5e7ea38e1af5488251c5369086197
   - enabled: 1
+    path: Assets/++Workdata/Scenes/RealMenuscene.unity
+    guid: 3561a6b121895594db8f71f6daf39ed8
+  - enabled: 1
     path: Assets/++Workdata/Scenes/GameSceneFINAL.unity
     guid: 6b2f7b5688b442b418abc6b5a04b798b
   m_configObjects:
